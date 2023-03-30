@@ -53,8 +53,6 @@ def create_user(details):
     return details
 
 
-
-
 def signup(request):
     """it will work as follows:
         1. Check if request is post and user isn't authenticated.
@@ -96,6 +94,7 @@ def signup(request):
     form = SinupForm()
     messages.add_message(request, message_status, messages_content)
     return render(request, "registration/signup.html", {"form": form})
+
 
 def confirmPass(request, token):
     """this function confirms verification and login user"""
