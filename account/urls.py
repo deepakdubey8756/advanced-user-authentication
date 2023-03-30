@@ -1,7 +1,7 @@
 from django.urls import path
 from . import views
 
-app_name = "account"
+app_name = "accounts"
 urlpatterns = [
     path('signup/', views.signup, name='signup'),
     path('password_confirm/<slug:token>', views.confirmPass, name='confirmPass'),

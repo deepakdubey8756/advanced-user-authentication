@@ -7,7 +7,7 @@ from django.core.mail import EmailMessage
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from .models import Profile
-from .forms import SinupForm, LoginForm
+from .forms import SignUpForm, LoginForm
 import re
 from utilities.genTokens import genToken
 from utilities.passwordVlidator import validatePassword
@@ -22,7 +22,7 @@ def extract_email_details(request):
     confirmPass = request["confirmPass"]
     r = re.split(r'[@\.]', email)
     username = '_'.join(r)
-    status = User.objects.filter(username=username).exists()
+    status = not User.objects.filter(username=username).exists()
     if status == False:
         message_content = "Account already exits"
     return {"email": email,
@@ -36,20 +36,22 @@ def extract_email_details(request):
 def create_user(details):
     """Create user profile and update detail's message and status """
     try:
-        #creating user
-        user = User.objects.create_user(details['username'], details['email'], details['password'])
-        user.save()
-        # tokent to verify confirmation email.
         token = genToken()
         mail_status = send_mail(details['email'], token, "registration/email_templates.html", "email confirmation", "password_confirm")
-        # if successfully sended email
+
         if mail_status['message_status']:
-            profile = Profile(author = user, auth_token=token, isVerfied = False)
+            #creating user and his profile
+            user = User.objects.create_user(details['username'], details['email'], details['password'])
+            user.save()
+            profile = Profile(user = user, token=token, isVerfied = False)
             profile.save()
-            details['message_content'] = "Profile is created"
+            
+        details['message_content'] = mail_status['message_content']
+        details['status'] = mail_status['message_status']
+
     except Exception as e:
+        details['status'] = False
         details['message_content'] = e
-    details['status'] = mail_status['message_status']
     return details
 
 
@@ -69,11 +71,17 @@ def signup(request):
 
     if request.method  == 'POST' and not request.user.is_authenticated:
         
-        form = SinupForm(data = request.POST)
+        form = SignUpForm(data = request.POST)
         details = extract_email_details(request.POST)
 
         password_status = validatePassword(details['confirmPass']) and validatePassword(details['password'])
-        details['status'] = details['status'] and password_status
+
+
+        if password_status['status'] == False:
+            details['status'] = False
+            details['message_content'] = password_status['content']
+
+
         try:
             if form.is_valid() and details['status'] and details['confirmPass'] == details['password']:
                 details = create_user(details)
@@ -91,7 +99,7 @@ def signup(request):
     if request.user.is_authenticated:
         return redirect('/')
     
-    form = SinupForm()
+    form = SignUpForm()
     messages.add_message(request, message_status, messages_content)
     return render(request, "registration/signup.html", {"form": form})
 
@@ -103,7 +111,7 @@ def confirmPass(request, token):
         return redirect('/')
     try:
         # getting profile from token
-        profile = Profile.objects.filter(auth_token = str(token))
+        profile = Profile.objects.filter(token = str(token))
         if len(profile) == 0:
             messages.add_message(request, messages.ERROR, "Invalid token please do reset password to reconfirm your email")
             return redirect('accounts:login')
@@ -111,12 +119,11 @@ def confirmPass(request, token):
         #verifing user and changing authentication token
         # print("profile: ", profile)
         profile[0].isVerfied = True
-        profile[0].auth_token = "none"
-        profile[0].totalAccess = 0
+        profile[0].token = "none"
         profile[0].save()
 
         #loging user and sending to home page.
-        login(request, profile[0].author)
+        login(request, profile[0].user)
         messages.add_message(request, messages.SUCCESS, "Email successfully verified")
         return redirect('/')
     
@@ -146,6 +153,7 @@ def send_mail(user_email, token, template_str, subject, domain):
         email.fail_silently = False
         email.send()
     except Exception as e:
+        status = False
         message_content = e
     return {"message_status":status, "message_content": message_content}
     

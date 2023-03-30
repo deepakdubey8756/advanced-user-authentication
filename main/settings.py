@@ -7,7 +7,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = credentials.SECRET_KEY
 
-DEBUG = True
+DEBUG = credentials.DEBUG
 
 ALLOWED_HOSTS = []
 
@@ -83,6 +83,16 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+
+
+EMAIL_BACKEND = credentials.EMAIL_BACKEND
+EMAIL_HOST = credentials.EMAIL_HOST
+EMAIL_PORT = credentials.EMAIL_PORT
+EMAIL_USE_TLS = credentials.EMAIL_USE_TLS
+
+EMAIL_HOST_USER = credentials.EMAIL_HOST_USER
+EMAIL_HOST_PASSWORD = credentials.EMAIL_HOST_PASSWORD
 
 
 # Internationalization
