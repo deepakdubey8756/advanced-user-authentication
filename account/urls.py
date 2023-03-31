@@ -3,10 +3,11 @@ from . import views
 
 app_name = "accounts"
 urlpatterns = [
-    path('signup/', views.signup, name='signup'),
-    path('password_confirm/<slug:token>', views.confirmPass, name='confirmPass'),
-    path('login/', views.login_view, name='login'),
-    path('logout/', views.logout_view, name="logout"),
-    path('reset/', views.reset_view, name='reset'),
-    path('resetconfirm/<slug:token>', views.reset_confirm, name='resetconfirm')
+    path('', views.index, name="index"),
+    path('accounts/signup/', views.signup, name='signup'),
+    path('accounts/password_confirm/<slug:token>', views.confirmPass, name='confirmPass'),
+    path('accounts/login/', views.login_view, name='login'),
+    path('accounts/logout/', views.logout_view, name="logout"),
+    path('accounts/reset/', views.reset_view, name='reset'),
+    path('accounts/resetconfirm/<slug:token>', views.reset_confirm, name='resetconfirm')
 ]

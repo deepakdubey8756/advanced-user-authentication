@@ -12,6 +12,10 @@ import re
 from utilities.genTokens import genToken
 from utilities.passwordVlidator import validatePassword
 
+@login_required
+def index(request):
+    user = request.user
+    return render(request, 'registration/index.html', {"user": user})
 
 def extract_email_details(request):
     """function to extract details to check if user exists"""
@@ -161,7 +165,7 @@ def send_mail(user_email, token, template_str, subject, domain):
 def login_view(request):
     """Function to handle logging user"""
     if request.user.is_authenticated:
-        profile = Profile.objects.filter(author = request.user)
+        profile = Profile.objects.filter(user = request.user)
         if len(profile) == 0 or not profile[0].isVerfied:
             logout(request)
             messages.add_message(request, messages.ERROR, "Error login. verify your email")
@@ -175,10 +179,10 @@ def login_view(request):
         email = request.POST['email']
         password  = request.POST['password']
         try:
-            form = LoginForm(data = request.POST)
+            form = LoginForm(data = request.POST) and validatePassword(request.POST['password'])['status']
             if form.is_valid():
                 user = User.objects.get(email=email)
-                profile = Profile.objects.get(author = user)
+                profile = Profile.objects.get(user = user)
                 if not user.check_password(password):
                     raise ValueError("Enter the correct credentials")
                 
@@ -199,6 +203,7 @@ def login_view(request):
     form = LoginForm()
     return render(request, "registration/login.html", {"form": form})
     
+
 @login_required
 def logout_view(request):
     if request.method=="POST":
@@ -221,9 +226,9 @@ def reset_view(request):
         status = []
         try:
              # print("Everything is fine till here......")
-            profile = Profile.objects.filter(author = user[0])[0]
+            profile = Profile.objects.filter(user = user[0])[0]
             token = genToken()
-            profile.auth_token = token
+            profile.token = token
             profile.save()
             # print("Printing authentication token, ", profile.auth_token, 'token length', len(token))
             status = send_mail(email, str(token), "registration/reset_pass_email.html", "password reset", "resetconfirm")
@@ -240,7 +245,7 @@ def reset_view(request):
 def reset_confirm(request, token):
     if request.user.is_authenticated:
         return redirect('/')
-    profile = Profile.objects.filter(auth_token=str(token))
+    profile = Profile.objects.filter(token=str(token))
     # print(profile)
     if len(profile)==0:
         messages.add_message(request, messages.ERROR, "verificaiton failed. Retry")
@@ -250,7 +255,7 @@ def reset_confirm(request, token):
         confirmPass = request.POST['confirmPass']
         message_content = " "
         message_status = ""
-        if len(password) < 8:
+        if len(password) <= 8:
             message_content = "length should be more than 8"
             message_status = messages.ERROR
         elif password != confirmPass:
@@ -260,9 +265,9 @@ def reset_confirm(request, token):
         else:
             profile = profile[0]
             profile.isVerfied = True
-            profile.auth_token = "none"
+            profile.token = "none"
             profile.save()
-            user = profile.author 
+            user = profile.user
             user.set_password(password)
             user.save()
             messages.add_message(request, messages.SUCCESS, "password reset sucessful. Please consider login")
