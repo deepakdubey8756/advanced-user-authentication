@@ -7,6 +7,18 @@
     <title>Document</title>
 </head>
 <body>
-    This is my basic html section and i just love it so much that it will explode by nature.
+    {% if messages %}
+  {% for message in messages %}
+      <p {% if message.tags %} class="{{message.tags}}" {% endif %}>{{ message }}</p>
+  {% endfor %}
+  {% endif %}
+  <h2>Username</h2>
+  <p href="#" class="p-2">{{username | slice:"0:10"}}...</p> 
+  <h2>Email</h2>
+  <p href="#" class="p-2">{{email}}</p> 
+  <form action="{% url 'accounts:logout' %}" name="myForm" method="POST">
+    {% csrf_token %}  
+  <button class="noteButton logoutButton" type="submit" >logout</button>
+  </form>
 </body>
 </html>

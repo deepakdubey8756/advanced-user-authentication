@@ -14,18 +14,18 @@ from utilities.passwordVlidator import validatePassword
 
 @login_required
 def index(request):
-    user = request.user
-    return render(request, 'registration/index.html', {"user": user})
+    return render(request, 'registration/index.html')
 
 def extract_email_details(request):
     """function to extract details to check if user exists"""
-    message_content = "Everything is fine"
 
+    message_content = "Everything is fine"
     email = request['email']
     password = request["password"]
     confirmPass = request["confirmPass"]
     r = re.split(r'[@\.]', email)
     username = '_'.join(r)
+
     status = not User.objects.filter(username=username).exists()
     if status == False:
         message_content = "Account already exits"
@@ -44,7 +44,7 @@ def create_user(details):
         mail_status = send_mail(details['email'], token, "registration/email_templates.html", "email confirmation", "password_confirm")
 
         if mail_status['message_status']:
-            #creating user and his profile
+
             user = User.objects.create_user(details['username'], details['email'], details['password'])
             user.save()
             profile = Profile(user = user, token=token, isVerfied = False)
@@ -121,7 +121,6 @@ def confirmPass(request, token):
             return redirect('accounts:login')
         
         #verifing user and changing authentication token
-        # print("profile: ", profile)
         profile[0].isVerfied = True
         profile[0].token = "none"
         profile[0].save()
@@ -175,11 +174,13 @@ def login_view(request):
     
     message_status = messages.INFO
     message_content = ""
+
+    
     if request.method == "POST" and not request.user.is_authenticated:
         email = request.POST['email']
         password  = request.POST['password']
         try:
-            form = LoginForm(data = request.POST) and validatePassword(request.POST['password'])['status']
+            form = LoginForm(data = request.POST)
             if form.is_valid():
                 user = User.objects.get(email=email)
                 profile = Profile.objects.get(user = user)
@@ -243,20 +244,24 @@ def reset_view(request):
 
 
 def reset_confirm(request, token):
+
+
     if request.user.is_authenticated:
         return redirect('/')
     profile = Profile.objects.filter(token=str(token))
-    # print(profile)
+
     if len(profile)==0:
         messages.add_message(request, messages.ERROR, "verificaiton failed. Retry")
         return redirect('accounts:reset')
+
     if request.method == 'POST':
         password = request.POST['password']
         confirmPass = request.POST['confirmPass']
         message_content = " "
         message_status = ""
-        if len(password) <= 8:
-            message_content = "length should be more than 8"
+        status = validatePassword(password)
+        if status == 8:
+            message_content = status['content']
             message_status = messages.ERROR
         elif password != confirmPass:
             message_content = "passwords are not matching"
