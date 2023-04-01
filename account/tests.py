@@ -1,3 +1,5 @@
-from django.test import TestCase
+from tests.passwordTest import TestPassword
+from tests.profileTest import ProfileTestCase
 
-# Create your tests here.
+
+

@@ -25,7 +25,7 @@ def validatePassword(password):
     
     elif password.isalnum():
         message['status'] = False
-        message['content'] = "Password should contain atleast one none alpha numberic character"
+        message['content'] = "Password should contain atleast one non-alpha numberic character"
     
     return message
 

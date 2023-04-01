@@ -10,11 +10,14 @@ from .models import Profile
 from .forms import SignUpForm, LoginForm
 import re
 from utilities.genTokens import genToken
-from utilities.passwordVlidator import validatePassword
+from utilities.passValidator import validatePassword
+from utilities.getUsername import getUsername
 
 @login_required
 def index(request):
     return render(request, 'registration/index.html')
+
+
 
 def extract_email_details(request):
     """function to extract details to check if user exists"""
@@ -23,12 +26,13 @@ def extract_email_details(request):
     email = request['email']
     password = request["password"]
     confirmPass = request["confirmPass"]
-    r = re.split(r'[@\.]', email)
-    username = '_'.join(r)
+    username = getUsername(email)
 
     status = not User.objects.filter(username=username).exists()
+
     if status == False:
         message_content = "Account already exits"
+
     return {"email": email,
             "password":password,
             "confirmPass": confirmPass,
@@ -47,7 +51,7 @@ def create_user(details):
 
             user = User.objects.create_user(details['username'], details['email'], details['password'])
             user.save()
-            profile = Profile(user = user, token=token, isVerfied = False)
+            profile = Profile(user = user, token=token, isVerified = False)
             profile.save()
             
         details['message_content'] = mail_status['message_content']
@@ -121,7 +125,7 @@ def confirmPass(request, token):
             return redirect('accounts:login')
         
         #verifing user and changing authentication token
-        profile[0].isVerfied = True
+        profile[0].isVerified = True
         profile[0].token = "none"
         profile[0].save()
 
@@ -165,7 +169,7 @@ def login_view(request):
     """Function to handle logging user"""
     if request.user.is_authenticated:
         profile = Profile.objects.filter(user = request.user)
-        if len(profile) == 0 or not profile[0].isVerfied:
+        if len(profile) == 0 or not profile[0].isVerified:
             logout(request)
             messages.add_message(request, messages.ERROR, "Error login. verify your email")
             return redirect('accounts:reset')
@@ -187,7 +191,7 @@ def login_view(request):
                 if not user.check_password(password):
                     raise ValueError("Enter the correct credentials")
                 
-                elif not profile.isVerfied:
+                elif not profile.isVerified:
                     messages.add_message(request, messages.ERROR, "Please verify your email")
                     return redirect("accounts:reset")
                 else:
@@ -268,7 +272,7 @@ def reset_confirm(request, token):
         
         else:
             profile = profile[0]
-            profile.isVerfied = True
+            profile.isVerified = True
             profile.token = "none"
             profile.save()
             user = profile.user
