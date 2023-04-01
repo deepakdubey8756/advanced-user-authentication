@@ -18,7 +18,6 @@ def index(request):
     return render(request, 'registration/index.html')
 
 
-
 def extract_email_details(request):
     """function to extract details to check if user exists"""
 

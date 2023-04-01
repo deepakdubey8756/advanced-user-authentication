@@ -4,8 +4,6 @@ from django.contrib.auth.models import User
 from account.models import Profile
 from utilities.genTokens import genToken
 
-
-
 #Testing different models
 class ProfileTestCase(TestCase):
 

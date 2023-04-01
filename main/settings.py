@@ -9,7 +9,7 @@ SECRET_KEY = credentials.SECRET_KEY
 
 DEBUG = credentials.DEBUG
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['testserver']
 
 
 # Application definition
