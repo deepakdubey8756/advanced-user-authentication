@@ -1,24 +1,70 @@
+<!-- templates/user_detail.html -->
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>User Detail</title>
+    <style>
+        /* Define your custom styles here */
+        body {
+            background-color: #f7f7f7;
+            font-family: Arial, sans-serif;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-top: 50px;
+        }
+        .user-info {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0px 2px 5px #ccc;
+            width: 400px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+        }
+        label {
+            font-weight: bold;
+            display: inline-block;
+            width: 80px;
+            margin-bottom: 10px;
+        }
+        p {
+            margin: 0;
+            padding: 0;
+            line-height: 1.5;
+        }
+        .logout-btn {
+            display: block;
+            width: 100%;
+            margin: 20px auto 0;
+            padding: 10px;
+            font-weight: bold;
+            text-align: center;
+        }
+        .logoutButton{
+          background: #5757f7;
+          width: 112px;
+          height: 32px;
+          font-size: 22px;
+          text-align: center;
+          color: white;
+          border: none;
+          border-radius: 5px;
+        }
+    </style>
 </head>
 <body>
-    {% if messages %}
-  {% for message in messages %}
-      <p {% if message.tags %} class="{{message.tags}}" {% endif %}>{{ message }}</p>
-  {% endfor %}
-  {% endif %}
-  <h2>Username</h2>
-  <p href="#" class="p-2">{{username | slice:"0:10"}}...</p> 
-  <h2>Email</h2>
-  <p href="#" class="p-2">{{email}}</p> 
-  <form action="{% url 'accounts:logout' %}" name="myForm" method="POST">
-    {% csrf_token %}  
-  <button class="noteButton logoutButton" type="submit" >logout</button>
-  </form>
+    <h1>User Detail</h1>
+    <div class="user-info">
+        <label>Email:</label>
+        <p>{{ user.email }}</p>
+        <label>Username:</label>
+        <p>{{ user.username }}</p>
+    </div>
+    <form action="{% url 'accounts:logout' %}" name="myForm" method="POST" class="logout-btn">
+      {% csrf_token %}  
+    <button class="noteButton logoutButton" type="submit" >logout</button>
+    </form>
 </body>
 </html>

@@ -226,7 +226,6 @@ def reset_view(request):
         
         status = []
         try:
-             # print("Everything is fine till here......")
             profile = Profile.objects.filter(user = user[0])[0]
             token = genToken()
             profile.token = token
