@@ -8,7 +8,6 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from .models import Profile
 from .forms import SignUpForm, LoginForm
-import re
 from utilities.genTokens import genToken
 from utilities.passValidator import validatePassword
 from utilities.getUsername import getUsername

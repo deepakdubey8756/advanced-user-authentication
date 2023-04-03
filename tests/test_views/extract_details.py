@@ -2,6 +2,8 @@ from django.test import TestCase
 from account.views import extract_email_details
 from django.contrib.auth.models import User
 from utilities.getUsername import getUsername
+
+
 class ExtractEmailDetailsTestCase(TestCase):
 
     def test_user_does_not_exist(self):
