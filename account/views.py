@@ -165,6 +165,10 @@ def send_mail(user_email, token, template_str, subject, domain):
 
 def login_view(request):
     """Function to handle logging user"""
+
+    message_status = messages.INFO
+    message_content = ""
+
     if request.user.is_authenticated:
         profile = Profile.objects.filter(user = request.user)
         if len(profile) == 0 or not profile[0].isVerified:
@@ -174,29 +178,30 @@ def login_view(request):
         else:
             return redirect('/')
     
-    message_status = messages.INFO
-    message_content = ""
-
-    
-    if request.method == "POST" and not request.user.is_authenticated:
+    elif request.method == "POST" and not request.user.is_authenticated:
+        
         email = request.POST['email']
-        password  = request.POST['password']
+        password = request.POST['password']
+
         try:
-            form = LoginForm(data = request.POST)
+            form = LoginForm(data=request.POST)
+
             if form.is_valid():
+
                 user = User.objects.get(email=email)
-                profile = Profile.objects.get(user = user)
+                profile = Profile.objects.get(user=user)
+                
                 if not user.check_password(password):
-                    raise ValueError("Enter the correct credentials")
+                    raise ValueError("Wrong credentials")
                 
                 elif not profile.isVerified:
-                    messages.add_message(request, messages.ERROR, "Please verify your email")
+                    messages.add_message(request, messages.ERROR, "Please verify your account")
                     return redirect("accounts:reset")
                 else:
                     login(request, user)
                     return redirect("/")
             else:
-                raise ValueError("Data is not valid")
+                raise ValueError("Wrong credentials")
 
         except Exception as e:
             message_status = messages.ERROR
