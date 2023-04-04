@@ -113,7 +113,6 @@ def signup(request):
 def confirmPass(request, token):
     """this function confirms verification and login user"""
     if request.user.is_authenticated:
-        # print("User is authenticated", request.user)
         return redirect('/')
     try:
         # getting profile from token
@@ -139,8 +138,10 @@ def confirmPass(request, token):
 
 def send_mail(user_email, token, template_str, subject, domain):
     """Take email and generate token to send it to user"""
+
     status = True
     message_content = "Everything is fine"
+
     try:
         template = render_to_string(template_str,{
             "token": token,
@@ -250,7 +251,6 @@ def reset_view(request):
 
 
 def reset_confirm(request, token):
-
 
     if request.user.is_authenticated:
         return redirect('/')

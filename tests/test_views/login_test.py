@@ -18,7 +18,7 @@ class LoginTestCase(TestCase):
 
         #user object on which we will test
         self.user = User.objects.create_user(username='testuser', email = 'testuser@gmail.com', password='RS22312/')
-    
+        print("This is the user created:-- ", self.user)
 
     # Check following cases:
     # 1. Check the case when user is already authenticated but profile is saved but not verfied.
