@@ -29,7 +29,7 @@ def extract_email_details(request):
     status = not User.objects.filter(username=username).exists()
 
     if status == False:
-        message_content = "Account already exits"
+        message_content = "Account already exits" 
 
     return {"email": email,
             "password":password,
