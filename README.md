@@ -12,3 +12,6 @@ This project is build using following stacks.
 1. `Django`: As a backend framework.
 2. `Bootstrap`: Used for styling UI.
 3. `Mysql`:  Used as  a database.
+
+# Future developments:
+To optimize testcase for production level testing.
