@@ -1,3 +1,14 @@
 # advanced-user-authentication
-This is a super secure advanced authentication system designed to securely authenticate new users
-Advanced user authentication system
+this is an simple yet seucre authentication system with full email verification features written using django and bootstraps.
+
+## Features....
+It contains following `features`:
+1. sigup feature with email verification.
+2. Password reset features through email verification.
+3. Secure login with password.
+
+## Technical deatils:
+This project is build using following stacks.
+1. `Django`: As a backend framework.
+2. `Bootstrap`: Used for styling UI.
+3. `Mysql`:  Used as  a database.
