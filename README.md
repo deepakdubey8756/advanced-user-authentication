@@ -14,7 +14,7 @@ This project is build using following stacks.
 3. `Mysql`:  Used as  a database.
 
 # Demo
-You can check it's live demo here: ['secureAuth']('https://secureauth.pythonanywhere.com/').
+You can check it's live demo here: ['secureAuth'](https://secureauth.pythonanywhere.com/).
 
 
 # Future developments:
